@@ -1,6 +1,7 @@
 package com.api.controller;
 
 import com.api.entity.Registration;
+import com.api.payload.EmailSender;
 import com.api.payload.RegistrationDto;
 import com.api.service.RegistrationService;
 import jakarta.validation.Valid;
@@ -19,9 +20,11 @@ public class RegistratonController {
     //http://localhost:8080/api/v1/registration
 
     private RegistrationService registrationService;
+    private EmailSender emailSender;
 
-    public RegistratonController(RegistrationService registrationService) {
+    public RegistratonController(RegistrationService registrationService, EmailSender emailSender) {
         this.registrationService = registrationService;
+        this.emailSender = emailSender;
     }
 
     @GetMapping
@@ -40,6 +43,7 @@ public class RegistratonController {
             return new ResponseEntity<>(result.getFieldError().getDefaultMessage(),HttpStatus.CREATED);
         }
         RegistrationDto regDto = registrationService.createRegistration(registrationDto);
+    emailSender.sendMail(regDto.getEmail(), "from registration project","you have successfully registered to the application");
         return new ResponseEntity<>(regDto,HttpStatus.CREATED);
     }
 
